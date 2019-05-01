@@ -1,0 +1,58 @@
+version: '3.1'
+
+services:
+  mysql:
+    build: ./services/mysql
+    hostname: mysql
+    network_mode: bridge
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./www:/usr/local/apache2/htdocs
+    ports:
+      - "3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    network_mode: bridge
+    ports:
+      - "1025"
+      - "8025"
+  php:
+    build: ./services/php
+    hostname: php
+    network_mode: bridge
+    volumes:
+      - ./www:/usr/local/apache2/htdocs
+    environment:
+      LOCAL_USER_ID: ${LOCAL_USER_ID}
+      XDEBUG_CONFIG: remote_connect_back=${XDEBUG_REMOTE_CONNECT_BACK} idekey=${XDEBUG_IDEKEY} remote_host=${XDEBUG_REMOTE_HOST} remote_port=${XDEBUG_REMOTE_PORT}
+  httpd:
+    build: ./services/httpd
+    hostname: httpd
+    network_mode: bridge
+    ports:
+      - "80"
+      - "443"
+    volumes:
+      - ./www:/usr/local/apache2/htdocs
+  # blackfire:
+  #   image: blackfire/blackfire:1.15.0
+  #   network_mode: bridge
+  #   environment:
+  #     BLACKFIRE_SERVER_ID: ${BLACKFIRE_SERVER_ID}
+  #     BLACKFIRE_SERVER_TOKEN: ${BLACKFIRE_SERVER_TOKEN}
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.7
+    network_mode: bridge
+    ports:
+      - "80"
+    environment:
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+volumes:
+  mysql-data:
