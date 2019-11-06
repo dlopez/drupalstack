@@ -26,8 +26,8 @@ RUN apt-get update \
      libmemcached-dev \
      libzip-dev \
      zlib1g-dev \
-     ssmtp \
-     mysql-client \
+     msmtp \
+     mariadb-client \
      wget \
      unzip \
      imagemagick \
